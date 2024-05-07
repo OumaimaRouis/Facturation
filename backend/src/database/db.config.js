@@ -1,0 +1,13 @@
+const config= require('../config/config');
+const mongoose=require('mongoose');
+const db={};
+mongoose.Promise=global.Promise;
+mongoose.set('strictQuery', false);
+db.mongoose=mongoose;
+db.url=config.DB_URL;
+db.clients= require('../api/models/client.model')(mongoose);
+db.users= require('../api/models/users.model')(mongoose);
+db.facturations= require('../api/models/facturation.model')(mongoose);
+db.articles= require('../api/models/article.model')(mongoose);
+db.detailAr= require('../api/models/detailsAr.model')(mongoose);
+module.exports=db;

@@ -7,12 +7,19 @@ module.exports = mongoose => {
     const Post = require('./client.model');
     const Article = require('./article.model');
 
+    const ArticleDetailsSchema = new Schema({
+    article: { type: Schema.Types.ObjectId, ref: 'Article', required: true },
+    quantite: { type: Number, required: true },
+    prix: { type: Number, required: true },
+});
     // Define FactSchema
     let FacturationSchema = new Schema({
         numeroFacture: { type: Number, required: true },
         dateFacture: { type: Date, required: true },
         client: { type: Schema.Types.ObjectId, ref: 'Client', required: true },  
-        articles: [{ type: Schema.Types.ObjectId, ref: 'Article' }] 
+        articles: [{ type: Schema.Types.ObjectId, ref: 'Article' }], 
+        amount: [{ type: Number }],
+        totalAmount: {type: Number},
     },{
         timestamps: true 
     });
@@ -32,7 +39,7 @@ module.exports = mongoose => {
         try {
             const facturations = await Fact.find({})
                 .populate('client', 'name') // Populate the 'client' field with the 'name' field from the Client collection
-                .populate('article', 'reference'); // Populate the 'article' field with the 'reference' field from the Article collection
+                .populate('article', 'reference', 'prix', 'quantite'); // Populate the 'article' field with the 'reference' field from the Article collection
             return facturations;
         } catch (error) {
             console.error('Error while retrieving facturations:', error);

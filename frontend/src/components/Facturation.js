@@ -51,11 +51,18 @@ function Facturation(props) {
     const handleArchive = async () => {
         try {
             const clientId = await getClientId(clientName);
+            calculateTotal();
             const data = {
                 numeroFacture: parseInt(numberInvoice),
                 dateFacture: new Date().toISOString().slice(0, 10),
                 client: clientId,
-                articles: invoiceItems.map(item => item.id)
+                articles: invoiceItems.map(item => ({
+                    article: item.id, // Reference the article ID
+                    quantity: item.quantity, // Include quantity
+                    price: item.price, // Include price
+                })),
+                amount:  invoiceItems.map(item => item.amount),
+                totalAmount:total,
                 
             };
             console.log("Données à envoyer à l'API de création de facturation :", data);

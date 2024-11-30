@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useLocation,useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 
 function Consulter(props) {
 
-    const location = useLocation();
-    const state = location.state || {};
     const { id } = useParams();
     const [invoice, setFacturations] = useState([]);
-    const [total, setTotal] = useState(0);
 
 
     const handlePrint = () => {
@@ -101,15 +98,16 @@ function Consulter(props) {
                             {invoice && invoice.articles && invoice.articles.map((item, index) => (
     <tr key={index}>
         <td className="border px-4 py-2">{item.reference}</td>
-        <td className="border px-4 py-2">{item.quantity}</td>
-        <td className="border px-4 py-2">{item.price}</td>
-        <td className="border px-4 py-2">{item.amount}</td>
-    </tr>
+        <td className="border px-4 py-2">{item.quantite}</td>
+        <td className="border px-4 py-2">{invoice.prix}</td>
+        <td className="border px-4 py-2">
+                {Array.isArray(invoice.amount) ? invoice.amount[index] : "N/A"}
+            </td>        </tr>
 ))}
                             </tbody>
                         </table>
                         <h2 className="flex items-end justify-end text-gray-800 text-4xl font-bold">
-                            Total {total.toLocaleString()} Dt
+                            Total {invoice.totalAmount} Dt
                         </h2>
                         <section className="mt-10">
     <p>Cacher et Signature</p>

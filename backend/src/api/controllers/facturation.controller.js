@@ -1,30 +1,44 @@
 const slugify = require('slugify');
 const db = require('../../database/db.config');
 const Facturation = db.facturations.Facturation;
+const mongoose = require('mongoose');
 
 //create a new post
 exports.create = (req, res) => {
     // Récupération des données
-    const { numeroFacture, dateFacture, client, articles } = req.body;
+    const { numeroFacture, dateFacture, client, articles, amount, totalAmount } = req.body;
     console.log("Données reçues depuis le frontend : ", req.body);
 
     // Vérification si des données requises sont manquantes
-    if (!numeroFacture || !dateFacture || !client || !articles) {
+    if (!numeroFacture || !dateFacture || !client || !articles || !amount || !totalAmount) {
         return res.status(400).send({
             message: 'Les champs ne peuvent pas être vides'
         });
     }
 
     // Création d'un tableau pour stocker les articles au format attendu par le modèle
-    const articleIds = articles.map(articles => articles.id);
+    //const articleIds = articles.map(articles => articles.id);
 
+    const validatedArticles = articles.map(item => {
+        console.log('articleId:', item.articleId); // Log to check the value
+        
+        return {
+            articleId: { type: mongoose.Schema.Types.ObjectId, ref: 'Article' },
+            quantite: item.quantite,
+            prix: item.prix,
+        };
+    });
+    
     // Création d'une nouvelle instance de Facturation avec les données reçues
     const newFacturation = new Facturation({
         numeroFacture: numeroFacture,
         dateFacture: dateFacture,
         client: client,
-        articles: articles
+        articles: articles,
+        amount:amount,
+        totalAmount:totalAmount
     });
+    console.log(articles);
     console.log("Données de la facturation avant sauvegarde :", newFacturation);
 
 

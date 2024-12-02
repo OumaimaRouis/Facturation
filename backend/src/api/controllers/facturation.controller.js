@@ -20,12 +20,11 @@ exports.create = (req, res) => {
     //const articleIds = articles.map(articles => articles.id);
 
     const validatedArticles = articles.map(item => {
-        console.log('articleId:', item.articleId); // Log to check the value
+        console.log('articleId:', item.article); // Log to check the value
         
         return {
-            articleId: { type: mongoose.Schema.Types.ObjectId, ref: 'Article' },
-            quantite: item.quantite,
-            prix: item.prix,
+            article: item.article,
+            quantite: item.quantite
         };
     });
     
@@ -34,7 +33,7 @@ exports.create = (req, res) => {
         numeroFacture: numeroFacture,
         dateFacture: dateFacture,
         client: client,
-        articles: articles,
+        articles: validatedArticles,
         amount:amount,
         totalAmount:totalAmount
     });
@@ -60,7 +59,7 @@ exports.create = (req, res) => {
 
 exports.findAll = (req, res) => {
     Facturation.find({
-
+        
     }).then((data)=> {
         res.send(data);
     }).catch((err)=> {

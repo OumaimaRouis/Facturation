@@ -57,12 +57,11 @@ function Facturation(props) {
                 dateFacture: new Date().toISOString().slice(0, 10),
                 client: clientId,
                 articles: invoiceItems.map(item => ({
-                    article: item.id, // Reference the article ID
-                    quantity: item.quantity, // Include quantity
-                    price: item.price, // Include price
-                })),
-                amount:  invoiceItems.map(item => item.amount),
-                totalAmount:total,
+                article: item.id, // Reference the article ID
+                quantite: item.quantity, // Include quantity
+            })),                
+            amount:  invoiceItems.map(item => item.amount),
+            totalAmount:total,
                 
             };
             console.log("Données à envoyer à l'API de création de facturation :", data);
@@ -70,6 +69,7 @@ function Facturation(props) {
     
             // Vérifier la disponibilité des quantités d'articles
             const availabilityPromises = invoiceItems.map(async item => {
+                
                 const response = await axios.get(`http://localhost:3000/api/article/${item.id}`);
                 const article = response.data;
                 console.log("Réponse de la requête :", response.data);

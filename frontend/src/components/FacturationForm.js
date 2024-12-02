@@ -54,10 +54,10 @@ function FacturationTable() {
     }
   };
 
-  const fetchArticleDetails = async (articleIds) => {
+  const fetchArticleDetails = async (arts) => {
     try {
-      const articles = await Promise.all(articleIds.map(async (articleId) => {
-        const response = await axios.get(`http://localhost:3000/api/article/${articleId}`);
+      const articles = await Promise.all(arts.map(async (art) => {
+        const response = await axios.get(`http://localhost:3000/api/article/${art.article}`);
         return response.data;
       }));
       return articles;

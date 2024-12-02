@@ -22,11 +22,13 @@ function Consulter(props) {
             const clientResponse = await axios.get(`http://localhost:3000/api/client/${clientId}`);
             response.data.name = clientResponse.data.name;
             response.data.address = clientResponse.data.address; 
-            await Promise.all(response.data.articles.map(async item => {
-                const responseArticle = await axios.get(`http://localhost:3000/api/article/${item}`);
+            await Promise.all(response.data.articles.map(async (item, index) => {
+                const responseArticle = await axios.get(`http://localhost:3000/api/article/${item.article}`);
                 const article = responseArticle.data;
+                article.quantite = response.data.articles[index].quantite;
                 articles.push(article);
             }));
+            console.log("tesst",response.data.articles)
             response.data.articles = articles;
             console.log(response.data)
             setFacturations(response.data);
@@ -80,7 +82,7 @@ function Consulter(props) {
                                     />
                                 </li>
                                 <li className="p-1 bg-gray-100">
-                                    <span className="font-bold">La Date du Facture:</span> {new Date().toISOString().slice(0,10)}
+                                    <span className="font-bold">La Date du Facture:</span> {invoice.dateFacture && new Date(invoice.dateFacture).toISOString().slice(0,10)}
                                 </li>
                             </ul>
                         </article>
@@ -98,13 +100,14 @@ function Consulter(props) {
                             {invoice && invoice.articles && invoice.articles.map((item, index) => (
     <tr key={index}>
         <td className="border px-4 py-2">{item.reference}</td>
-        <td className="border px-4 py-2">{item.quantite}</td>
-        <td className="border px-4 py-2">{invoice.prix}</td>
+        <td className="border px-4 py-2">{invoice.articles[index].quantite}</td>
+        <td className="border px-4 py-2">{item.prix}</td>
         <td className="border px-4 py-2">
-                {Array.isArray(invoice.amount) ? invoice.amount[index] : "N/A"}
-            </td>        </tr>
+            {Array.isArray(invoice.amount) ? invoice.amount[index] : "N/A"}
+        </td>        
+    </tr>
 ))}
-                            </tbody>
+</tbody>
                         </table>
                         <h2 className="flex items-end justify-end text-gray-800 text-4xl font-bold">
                             Total {invoice.totalAmount} Dt

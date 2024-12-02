@@ -42,7 +42,7 @@ exports.findOne = (req, res) => {
     }
 
     Article.findById(id)
-        .select("reference quantite") // Sélectionnez à la fois les champs "reference" et "quantite"
+        .select("reference quantite prix") // Sélectionnez à la fois les champs "reference" et "quantite"
         .then((data) => {
             if (!data) {
                 return res.status(404).send({ message: "Article not found" });

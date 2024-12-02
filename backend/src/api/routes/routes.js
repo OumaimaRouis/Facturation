@@ -4,7 +4,6 @@ module.exports = app =>{
     const articleController= require('../controllers/article.controller');
     const userController= require('../controllers/users.controller');
     const factController= require('../controllers/facturation.controller');
-    const detailArController= require('../controllers/detailAr.controller');
 
     router.post('/clients', clientController.create);
     router.get('/clients', clientController.findAll);
@@ -19,9 +18,6 @@ module.exports = app =>{
     router.get('/article/:id', articleController.findOne);
     router.put('/article/:id', articleController.update);
 
-    router.post('/detail', detailArController.create);
-    router.get('/detail', detailArController.findAll);
-    router.get('/detail/:id', detailArController.findOne);
 
 
     router.post('/register', userController.registerUser);

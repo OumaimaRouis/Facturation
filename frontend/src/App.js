@@ -11,7 +11,8 @@ import FacturationTable from './components/FacturationForm';
 import Login from './auth/Login';
 import Register from './auth/Register';
 import Consulter from './components/Consulter';
-
+//import Chatbot from './components/chatbot/Chatbot';
+import Chatbot from './components/chatbot';
 
 function App() {
   return (
@@ -28,6 +29,8 @@ function App() {
           <Route path='/fact' element={<Facturation />} />
           <Route path='/facturation' element={<FacturationTable/>}/>
           <Route path='/consulter/:id' element={<Consulter/>}/>
+          <Route path='/chatbot' element={<Chatbot/>}/>
+
         </Routes>
       </Router>
     </>

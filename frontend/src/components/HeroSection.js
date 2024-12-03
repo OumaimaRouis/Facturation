@@ -27,6 +27,7 @@ function HeroSection() {
           className='btns'
           buttonStyle='btn--outline'
           buttonSize='btn--large'
+          to='/auth/register'
         >
           GET STARTED
         </Button>
@@ -35,8 +36,9 @@ function HeroSection() {
           className='btns'
           buttonStyle='btn--primary'
           buttonSize='btn--large'
+          to='/chatbot'
         >
-          WATCH TRAILER <i className='far fa-play-circle' />
+          Chat Bot <i className='far fa-play-circle' />
         </Button>
       </div>
     </div>

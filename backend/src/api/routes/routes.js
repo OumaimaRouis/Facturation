@@ -4,7 +4,9 @@ module.exports = app =>{
     const articleController= require('../controllers/article.controller');
     const userController= require('../controllers/users.controller');
     const factController= require('../controllers/facturation.controller');
-
+    const knowledgeController= require('../controllers/knowledgeController');
+    const chatbotService= require('../services/chatbotService');
+    
     router.post('/clients', clientController.create);
     router.get('/clients', clientController.findAll);
     router.get('/clients/:id', clientController.findOne);
@@ -19,7 +21,6 @@ module.exports = app =>{
     router.put('/article/:id', articleController.update);
 
 
-
     router.post('/register', userController.registerUser);
     router.post('/login', userController.loginUser);
 
@@ -29,6 +30,18 @@ module.exports = app =>{
     router.delete('/fact/:id', factController.delete);
     router.put('/fact/:id', factController.update);
 
+    router.post('/know',knowledgeController.addKnowledge);
+    router.get('/cat/:cat',knowledgeController.getKnowledgeByCategory);
+
+    router.post('/ask', async (req, res) => {
+        try {
+          const { userInput } = req.body;
+          const response = await chatbotService.processUserInput(userInput);
+          res.status(200).json({ response });
+        } catch (error) {
+          res.status(500).json({ message: 'Error processing chatbot request', error });
+        }
+      });
 
 
     app.use('/api/', router);

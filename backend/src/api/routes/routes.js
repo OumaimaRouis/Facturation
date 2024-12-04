@@ -43,6 +43,26 @@ module.exports = app =>{
         }
       });
 
+      app.post('/api/nlp/navigation', (req, res) => {
+        const { text } = req.body;
+      
+        let intent = null;
+        if (text.toLowerCase().includes('facture')) {
+          intent = 'facture';
+        } else if (text.toLowerCase().includes('client')) {
+          intent = 'client';
+        } else if (text.toLowerCase().includes('home') || text.toLowerCase().includes('accueil')) {
+          intent = 'home';
+        } else {
+          intent = 'unknown';
+        }
+      
+        res.json({ intent });
+      });
+  
+  
+     
+
 
     app.use('/api/', router);
 }

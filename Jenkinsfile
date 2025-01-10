@@ -14,7 +14,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    echo 'Starting Git checkout...'
+                    echo 'Starting Git checkout....'
                     git branch: 'version1',
                         url: 'git@github.com:OumaimaRouis/Facturation.git',
                         credentialsId: 'private_key' // Jenkins credentials ID for GitHub SSH key
@@ -27,7 +27,7 @@ pipeline {
                 stage('Build Backend Image') {  
                     steps {
                         script {
-                            echo 'Building backend image...'
+                            echo 'Building backend image....'
                             dir('backend') {  
                                 dockerImageServer = docker.build("${IMAGE_NAME_SERVER}")
                             }
@@ -37,7 +37,7 @@ pipeline {
                 stage('Build Frontend Image') {  
                     steps {
                         script {
-                            echo 'Building frontend image...'
+                            echo 'Building frontend image....'
                             dir('frontend') {  
                                 dockerImageClient = docker.build("${IMAGE_NAME_CLIENT}")
                             }

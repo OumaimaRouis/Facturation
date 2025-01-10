@@ -1,0 +1,39 @@
+version: '3'
+services:
+  # Service MongoDB
+  mongodb:
+    image: mongo:latest
+    container_name: mongodbb21
+    networks:
+      - facrure-network
+
+  # Service serveur Node.js
+  server:
+    build:
+      context: ./backend
+    container_name: server21
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/client
+    depends_on:
+      - mongodb
+    networks:
+      - facrure-network
+
+  # Service client React
+  client:
+    build:
+      context: ./frontend
+    container_name: clientt21
+    ports:
+      - "3001:3001"
+    depends_on:
+      - server
+    networks:
+      - facrure-network
+
+# Réseau
+networks:
+  facrure-network:
+    driver: bridge

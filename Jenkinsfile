@@ -22,23 +22,57 @@ pipeline {
             }
         }
 
+        stage('Check for Changes') {
+            steps {
+                script {
+                    echo 'Checking for changes in backend and frontend...'
+
+                    // Detect changes in the backend folder
+                    def backendChanged = sh(script: 'git diff --name-only HEAD~1..HEAD backend', returnStdout: true).trim()
+                    if (backendChanged) {
+                        echo "Changes detected in backend"
+                        env.BACKEND_CHANGED = 'true'
+                    } else {
+                        echo "No changes detected in backend"
+                        env.BACKEND_CHANGED = 'false'
+                    }
+
+                    // Detect changes in the frontend folder
+                    def frontendChanged = sh(script: 'git diff --name-only HEAD~1..HEAD frontend', returnStdout: true).trim()
+                    if (frontendChanged) {
+                        echo "Changes detected in frontend"
+                        env.FRONTEND_CHANGED = 'true'
+                    } else {
+                        echo "No changes detected in frontend"
+                        env.FRONTEND_CHANGED = 'false'
+                    }
+                }
+            }
+        }
+
         stage('Build Images') {
             parallel {
-                stage('Build Backend Image') {  
+                stage('Build Backend Image') {
+                    when {
+                        environment name: 'BACKEND_CHANGED', value: 'true'
+                    }
                     steps {
                         script {
                             echo 'Building backend image....'
-                            dir('backend') {  
+                            dir('backend') {
                                 dockerImageServer = docker.build("${IMAGE_NAME_SERVER}")
                             }
                         }
                     }
                 }
-                stage('Build Frontend Image') {  
+                stage('Build Frontend Image') {
+                    when {
+                        environment name: 'FRONTEND_CHANGED', value: 'true'
+                    }
                     steps {
                         script {
                             echo 'Building frontend image....'
-                            dir('frontend') {  
+                            dir('frontend') {
                                 dockerImageClient = docker.build("${IMAGE_NAME_CLIENT}")
                             }
                         }
@@ -47,7 +81,10 @@ pipeline {
             }
         }
 
-        stage('Scan Backend Image') {  
+        stage('Scan Backend Image') {
+            when {
+                environment name: 'BACKEND_CHANGED', value: 'true'
+            }
             steps {
                 script {
                     echo 'Scanning backend image...'
@@ -61,7 +98,10 @@ pipeline {
             }
         }
 
-        stage('Scan Frontend Image') {  
+        stage('Scan Frontend Image') {
+            when {
+                environment name: 'FRONTEND_CHANGED', value: 'true'
+            }
             steps {
                 script {
                     echo 'Scanning frontend image...'
@@ -76,15 +116,37 @@ pipeline {
         }
 
         stage('Push Images to Docker Hub') {
-            steps {
-                script {
-                    echo 'Pushing images to Docker Hub...'
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh """
-                            docker login -u ${USERNAME} -p ${PASSWORD} || exit 1
-                        """
-                        dockerImageServer.push("${BUILD_NUMBER}") // Use build number for tagging
-                        dockerImageClient.push("${BUILD_NUMBER}")
+            parallel {
+                stage('Push Backend Image') {
+                    when {
+                        environment name: 'BACKEND_CHANGED', value: 'true'
+                    }
+                    steps {
+                        script {
+                            echo 'Pushing backend image to Docker Hub...'
+                            withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                sh """
+                                    docker login -u ${USERNAME} -p ${PASSWORD} || exit 1
+                                """
+                                dockerImageServer.push("${BUILD_NUMBER}") // Use build number for tagging
+                            }
+                        }
+                    }
+                }
+                stage('Push Frontend Image') {
+                    when {
+                        environment name: 'FRONTEND_CHANGED', value: 'true'
+                    }
+                    steps {
+                        script {
+                            echo 'Pushing frontend image to Docker Hub...'
+                            withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                sh """
+                                    docker login -u ${USERNAME} -p ${PASSWORD} || exit 1
+                                """
+                                dockerImageClient.push("${BUILD_NUMBER}")
+                            }
+                        }
                     }
                 }
             }
@@ -104,6 +166,9 @@ pipeline {
 
                 // Optionally remove unused volumes
                 sh 'docker volume prune -f'
+
+                // Remove intermediate images (unused builder images)
+                sh 'docker builder prune -f'
             }
         }
     }

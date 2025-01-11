@@ -1,11 +1,33 @@
 module.exports = app =>{
     const router = require('express').Router();
+    const promClient = require('prom-client');
     const clientController= require('../controllers/client.controller');
     const articleController= require('../controllers/article.controller');
     const userController= require('../controllers/users.controller');
     const factController= require('../controllers/facturation.controller');
     const knowledgeController= require('../controllers/knowledgeController');
     const chatbotService= require('../services/chatbotService');
+
+    // Define Prometheus metrics
+    const collectDefaultMetrics = promClient.collectDefaultMetrics;
+    collectDefaultMetrics(); // Automatically collects default system metrics
+
+    // Create custom metrics
+    const httpRequestDurationMicroseconds = new promClient.Histogram({
+      name: 'http_request_duration_seconds',
+      help: 'Histogram of HTTP request durations in seconds',
+      labelNames: ['method', 'route', 'status_code'],
+      buckets: [0.1, 0.3, 0.5, 1, 2, 5, 10] // Customizable buckets
+  });
+
+   // Middleware to track request durations
+   router.use((req, res, next) => {
+    const end = httpRequestDurationMicroseconds.startTimer();
+    res.on('finish', () => {
+        end({ method: req.method, route: req.originalUrl, status_code: res.statusCode });
+    });
+    next();
+});
     
     router.post('/clients', clientController.create);
     router.get('/clients', clientController.findAll);
@@ -59,10 +81,17 @@ module.exports = app =>{
       
         res.json({ intent });
       });
-  
-  
-     
 
+      // Expose /metrics endpoint for Prometheus scraping
+    app.get('/metrics', async (req, res) => {
+      try {
+          res.set('Content-Type', promClient.register.contentType);
+          res.end(await promClient.register.metrics());
+      } catch (error) {
+          res.status(500).json({ message: 'Error getting metrics', error });
+      }
+  });
+  
 
     app.use('/api/', router);
 }

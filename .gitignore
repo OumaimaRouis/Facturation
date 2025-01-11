@@ -3,7 +3,7 @@
 # dependencies
 /frontend/node_modules
 /backend/node_modules
-/facture-charts/node_modules
+/node_modules
 
 /frontend/.pnp
 .pnp.js

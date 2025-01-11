@@ -1,6 +1,6 @@
 const User = require('../models/users.model');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const {isValidEmail} = require('../../middleware/UserValidation');
 const db = require('../../database/db.config');
 require('dotenv').config;

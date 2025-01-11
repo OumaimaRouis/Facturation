@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-configmap
+data:
+  MONGO_URI: "mongodb://mongodb-service:27017/client"
+  REACT_APP_SERVER_URL: "http://server-service:3000"
+  PORT: "3000"

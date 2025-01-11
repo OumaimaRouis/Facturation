@@ -1,5 +1,5 @@
 # Utiliser l’image de base node:lts-alpine
-FROM node:lts-alpine as build
+FROM node:22-alpine
 
 # Définir le répertoire de travail dans le conteneur
 WORKDIR /src

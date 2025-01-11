@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: facturation-client
+  template:
+    metadata:
+      labels:
+        app: facturation-client
+    spec:
+      containers:
+      - name: facturation-client
+        image: oumaimarouis/facturation-client:v2
+        ports:
+        - containerPort: 3001
+        envFrom:
+        - configMapRef:
+            name: app-configmap

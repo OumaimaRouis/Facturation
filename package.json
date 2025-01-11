@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "natural": "^8.0.1",
-    "node-nlp": "^4.27.0"
-  }
-}

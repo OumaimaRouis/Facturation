@@ -102,6 +102,49 @@ pipeline {
 
 Accédez à Grafana via l'URL et utilisez `admin/prometheus` comme source de données.
 
+### Notes et Commandes Utilisées
+
+#### Réseau Docker
+```sh
+docker network create facrure-network
+```
+
+#### Containers Docker
+- MongoDB :
+  ```sh
+  docker run -d --name mongodbb --network facrure-network mongo
+  ```
+- Serveur :
+  ```sh
+  docker run -d --name server2 --network facrure-network -p 3000:3000 facture-server
+  ```
+- Client :
+  ```sh
+  docker run -d --name clientt --network facrure-network -p 3001:3001 facture-client
+  ```
+
+#### Jenkins
+```sh
+docker run -d -p 8090:8080 -p 50000:50000 --name jenkins21 --privileged -v jenkins_home:/var/jenkins_home salahgo/jenkins:dind
+```
+Pour récupérer le mot de passe initial :
+```sh
+docker exec -it jenkins21 cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
+#### Accès Prometheus et Grafana
+- Prometheus :
+  ```sh
+  kubectl port-forward -n monitoring svc/prometheus-server 9090:80
+  ```
+  Accédez à : http://127.0.0.1:9090/query
+
+- Grafana :
+  ```sh
+  kubectl port-forward -n monitoring svc/grafana 3000:80
+  ```
+  Accédez à : http://127.0.0.1:3000/login
+
 ### Accès à l'Application
 Ajoutez cette ligne au fichier `/etc/hosts` :
 ```plaintext
